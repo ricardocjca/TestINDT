@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Teste INDT</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.3/angular.min.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <script type="text/javascript" src="js/controller/apiController.js"></script>
+
+  </head>
+  <body ng-app="meuApp" ng-controller="meuControle">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">{{titulo}}</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          
+          <form class="navbar-form navbar-left">
+            <div class="form-group">
+              <input type="text" class="form-control" ng-model="qBusca" placeholder="Digite aqui sua busca!">
+            </div>
+           
+          </form>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#" data-toggle="modal" data-target=".bs-example-modal-lg">Adicionar Autor</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#myModalcadLivro">Adicionar Livro</a></li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+    <div class="col-md-offset-3 col-md-6" id="corpTable">
+      
+      <h3 id="titulo" class="alert alert-info">Autores & Livros</h3>
+      
+      <span class="clearfix"></span>
+
+
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th ng-click="sort('idAutor')">ID <span class="glyphicon sort-icon" ng-show="sortKey=='idAutor'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span></th>
+            <th ng-click="sort('nome')">AUTOR <span class="glyphicon sort-icon" ng-show="sortKey=='nome'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span></th>
+            <th ng-click="sort('titulo')">LIVRO <span class="glyphicon sort-icon" ng-show="sortKey=='titulo'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr dir-paginate="aulivro in auLivros | itemsPerPage: 5 | filter:qBusca | orderBy:sortKey:reverse">
+            <td>{{aulivro.idAutor}}</td>
+            <td><a href="" class="glyphicon glyphicon-pencil green" data-toggle="modal" data-target="#myModaleditautor" ng-click="usuarioSelecionado(aulivro)" aria-hidden="true"></a> <a href="" class="glyphicon glyphicon-trash red btn"  data-toggle="modal" data-target="#myModaldelete" ng-click="usuarioSelecionado(aulivro)" aria-hidden="true"></a> {{ aulivro.nome}}</td>
+            <td><a href="" class="glyphicon glyphicon-pencil green"   data-toggle="modal" data-target="#myModaleditlivro" ng-click="livroSelecionado(aulivro)" aria-hidden="true"></a> <a href="" class="glyphicon glyphicon-trash red"  data-toggle="modal" data-target="#myModaldeleteLivro" ng-click="livroSelecionado(aulivro)" aria-hidden="true"></a> {{ aulivro.titulo}}</td>
+
+          </tr>
+
+        </tbody>
+      </table>
+
+      <dir-pagination-controls max-size="5" direction-links="true" boundary-links="true"></dir-pagination-controls>
+    </div>
+
+
+<div class="col-md-offset-3 col-md-6">
+    <!-- Large modal -->
+    
+
+    <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel">Cadastro</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Nome</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="firstName" id="firstName" ng-model="autorForm.firstName">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Sobrenome</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="lastName" id="lastName" ng-model="autorForm.lastName">
+                </div>
+              </div>
+             
+              
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-primary" ng-click="adicionarAutor()" data-dismiss="modal">Cadastrar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+          
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+
+    <div class="modal fade" id="myModalcadLivro" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel">Cadastro Livro</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Selecione o Autor</label>
+                <div class="col-sm-10" >
+                  <select class="form-control" ng-model="livroForm.authorId" ng-options="autor.id as autor.firstName for autor in auTores">
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Titulo do Livro</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="title" id="title" ng-model="livroForm.title">
+                </div>
+              </div>
+             
+              
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-primary" ng-click="adicionarLivro()" data-dismiss="modal">Cadastrar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+          
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+
+    <div class="modal fade" id="myModaleditautor" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel">Editar</h4>
+          </div>
+          <div class="modal-body" >
+            <form class="form-horizontal" >
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Nome</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="firstName" id="firstName" ng-model="usuarioClicado[0].firstName">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Sobrenome</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="lastName" id="lastName" ng-model="usuarioClicado[0].lastName"> 
+                </div>
+              </div>
+             
+              
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-primary" ng-click="usuarioEditado()" data-dismiss="modal">Editar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+          
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+
+    <div class="modal fade" id="myModaleditlivro" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel">Editar</h4>
+          </div>
+          <div class="modal-body" >
+            <form class="form-horizontal" >
+              <div class="form-group">
+                <label class="col-sm-2 control-label">Livro</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="title" id="title" ng-model="livroClicado[0].title">
+                  <input type="hidden" class="form-control" name="id" id="id" ng-model="livroClicado[0].id">
+                  <input type="hidden" class="form-control" name="idlivro" id="idlivro" ng-model="livroClicado[0].idLivro">
+                </div>
+              </div>
+             
+              
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-primary" ng-click="livroEditado()" data-dismiss="modal">Editar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+          
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+
+    <div class="modal fade" id="myModaldelete" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel">Excluir</h4>
+          </div>
+          <div class="modal-body">
+            <h3>Tem certeza que quer excluir {{usuarioClicado[0].firstName}}</h3>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+            <button type="button" class="btn btn-primary" ng-click="deletarUsuario(usuarioClicado)" data-dismiss="modal">Excluir</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+    <div class="modal fade" id="myModaldeleteLivro" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="gridSystemModalLabel">Excluir</h4>
+          </div>
+          <div class="modal-body">
+            <h3>Tem certeza que quer excluir {{livroClicado[0].title}}</h3>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+            <button type="button" class="btn btn-primary" ng-click="deletarLivro(livroClicado)" data-dismiss="modal">Excluir</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+</div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
+    <script type="text/javascript" src="js/dirPagination.js"></script>
+
+  </body>
+</html>
